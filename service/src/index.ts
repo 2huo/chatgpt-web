@@ -4,6 +4,7 @@ import type { ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
+import { db_login } from './utils/db'
 import { isNotEmptyString } from './utils/is'
 
 const app = express()
@@ -75,10 +76,52 @@ router.post('/verify', async (req, res) => {
     if (process.env.AUTH_SECRET_KEY !== token)
       throw new Error('密钥无效 | Secret key is invalid')
 
-    res.send({ status: 'Success', message: 'Verify successfully', data: null })
+    res.send({
+      status: 'Success',
+      message: 'Verify successfully',
+      data: null,
+    })
   }
   catch (error) {
-    res.send({ status: 'Fail', message: error.message, data: null })
+    res.send({
+      status: 'Fail',
+      message: error.message,
+      data: null,
+    })
+  }
+})
+
+router.post('/login', async (req, res) => {
+  try {
+    const {
+      account,
+      password,
+    } = req.body as { account: string; password: string }
+    if (!password || !account) {
+      throw new Error('请检查账号或密码是否合法')
+    }
+    else {
+      db_login(account, password, (err, pwd) => {
+        if (err)
+          throw new Error('账号不存在或密码错误')
+
+        if (password !== pwd.toString())
+          throw new Error('账号不存在或密码错误')
+      })
+    }
+
+    res.send({
+      status: 'Success',
+      message: 'Verify successfully',
+      data: null,
+    })
+  }
+  catch (error) {
+    res.send({
+      status: 'Fail',
+      message: error.message,
+      data: null,
+    })
   }
 })
 

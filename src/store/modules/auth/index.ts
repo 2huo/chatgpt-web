@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getToken, removeToken, setToken } from './helper'
+import { getToken, removeToken, setJWT, setToken } from './helper'
 import { store } from '@/store'
 import { fetchSession } from '@/api'
 
@@ -11,12 +11,16 @@ interface SessionResponse {
 export interface AuthState {
   token: string | undefined
   session: SessionResponse | null
+  jwt: String | null
+  loginAuth: boolean
 }
 
 export const useAuthStore = defineStore('auth-store', {
   state: (): AuthState => ({
     token: getToken(),
     session: null,
+    jwt: null,
+    loginAuth: false,
   }),
 
   getters: {
@@ -46,6 +50,12 @@ export const useAuthStore = defineStore('auth-store', {
       this.token = undefined
       removeToken()
     },
+
+    setJWT(token: string) {
+      this.jwt = token
+      setJWT(token)
+    },
+
   },
 })
 
