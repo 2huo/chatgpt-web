@@ -67,7 +67,7 @@ async function onConversation() {
     return
 
   controller = new AbortController()
-  console.log('onConversation - message', message)
+  // console.log('onConversation - message', message)
   addChat(
     +uuid,
     {
@@ -87,12 +87,12 @@ async function onConversation() {
   let options: Chat.ConversationRequest = {}
   const lastContext = conversationList.value[conversationList.value.length - 1]?.conversationOptions
 
-  console.log('onConversation - lastContext', lastContext)
+  // console.log('onConversation - lastContext', lastContext)
 
   if (lastContext && usingContext.value)
     options = { ...lastContext }
 
-  console.log('onConversation - options', options)
+  // console.log('onConversation - options', options)
 
   addChat(
     +uuid,
@@ -119,7 +119,7 @@ async function onConversation() {
           const xhr = event.target
           const { responseText } = xhr
 
-          console.log('onConversation - responseText', responseText)
+          // console.log('onConversation - responseText', responseText)
 
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
@@ -155,7 +155,7 @@ async function onConversation() {
             scrollToBottomIfAtBottom()
           }
           catch (error: any) {
-            console.log('error')
+            // console.log('error')
             ms.error(error.message ?? 'error')
             throw new Error('无访问权限，请先登录')
           }

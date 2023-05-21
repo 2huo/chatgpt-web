@@ -9,6 +9,7 @@ import { router } from '@/router'
 import { fetchLogin, fetchRegister } from '@/api'
 import type { Response } from '@/utils/request'
 import { initLocalState } from '@/store/modules/chat/helper'
+import { useUserStore } from '@/store'
 
 const authStore = useAuthStoreWithout()
 const password = ref<string>('')
@@ -18,6 +19,7 @@ const r_password = ref<string>('')
 const r_password_2 = ref<string>('')
 const message = useMessage()
 const isLogin = ref<boolean>(true)
+const userStore = useUserStore()
 
 interface IloginData {
   token: string
@@ -27,10 +29,11 @@ async function loginHandle() {
   const md5_pwd = Md5.hashStr(password.value).toUpperCase()
   try {
     const loginResult = await fetchLogin<IloginData>(account.value, md5_pwd)
-    console.log(loginResult)
+    // console.log(loginResult)
     loginResult.message && message.success(loginResult.message)
     authStore.setJWT(loginResult.data.token)
     authStore.loginAuth = false
+    userStore.updateUserInfo({ name: account.value })
     await initLocalState()
     await router.push({ name: 'Root' })
   }

@@ -16,7 +16,7 @@ const auth = async (req, res, next) => {
         const rawToken = String(Authorization).split(' ').pop()
         const tokenData = jwt.verify(rawToken, AUTH_SECRET_KEY)
         const user_account = (tokenData as JwtPayload).id
-        console.log('user_account', user_account)
+        // console.log('user_account', user_account)
         req.user_account = user_account
         next()
       }
