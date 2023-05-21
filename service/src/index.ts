@@ -1,10 +1,11 @@
 import express from 'express'
-import type { RequestProps } from './types'
+import jwt from 'jsonwebtoken'
+import type { IUser, RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
-import { db_login } from './utils/db'
+import { db_get_chatStorage, db_login, db_register_user, db_update_chatStorage } from './utils/db'
 import { isNotEmptyString } from './utils/is'
 
 const app = express()
@@ -56,6 +57,32 @@ router.post('/config', auth, async (req, res) => {
   }
 })
 
+router.post('/update_chatStorage', auth, async (req, res) => {
+  try {
+    const account = (req as any).user_account
+    const {
+      chatStorage,
+    } = req.body as IUser
+    // console.log(account, chatStorage)
+    await db_update_chatStorage(account, chatStorage)
+    res.send({ status: 'Success', message: '', data: null })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.get('/get_chatStorage', auth, async (req, res) => {
+  try {
+    const account = (req as any).user_account
+    const chatStorage = await db_get_chatStorage(account)
+    res.send({ status: 'Success', message: '', data: { chatStorage } })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
 router.post('/session', async (req, res) => {
   try {
     const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
@@ -69,12 +96,12 @@ router.post('/session', async (req, res) => {
 
 router.post('/verify', async (req, res) => {
   try {
-    const { token } = req.body as { token: string }
-    if (!token)
-      throw new Error('Secret key is empty')
+    // const { token } = req.body as { token: string }
+    // if (!token)
+    //   throw new Error('Secret key is empty')
 
-    if (process.env.AUTH_SECRET_KEY !== token)
-      throw new Error('密钥无效 | Secret key is invalid')
+    // if (process.env.AUTH_SECRET_KEY !== token)
+    //   throw new Error('密钥无效 | Secret key is invalid')
 
     res.send({
       status: 'Success',
@@ -92,27 +119,52 @@ router.post('/verify', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
+  const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
   try {
     const {
       account,
       password,
-    } = req.body as { account: string; password: string }
-    if (!password || !account) {
-      throw new Error('请检查账号或密码是否合法')
+    } = req.body as IUser
+    if (!account) {
+      throw new Error('请检查账号是否合法')
     }
     else {
-      db_login(account, password, (err, pwd) => {
-        if (err)
-          throw new Error('账号不存在或密码错误')
-
-        if (password !== pwd.toString())
-          throw new Error('账号不存在或密码错误')
+      await db_login(account, password)
+      const token = jwt.sign({
+        id: String(account),
+      }, AUTH_SECRET_KEY)
+      res.send({
+        status: 'Success',
+        message: '登录成功',
+        data: {
+          token,
+        },
       })
     }
+  }
+  catch (error) {
+    res.send({
+      status: 'Fail',
+      message: error.message,
+      data: null,
+    })
+  }
+})
+
+router.post('/register', async (req, res) => {
+  try {
+    const {
+      account,
+      password,
+      email,
+      tel,
+    } = req.body as IUser
+    // console.log(req.body)
+    await db_register_user(account, password, email, tel)
 
     res.send({
       status: 'Success',
-      message: 'Verify successfully',
+      message: '注册成功',
       data: null,
     })
   }

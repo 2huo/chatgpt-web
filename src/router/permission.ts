@@ -6,7 +6,6 @@ export function setupPageGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStoreWithout()
 
-    console.log('authStore', authStore)
     if (!authStore.jwt) {
       const jwt = getJWT()
       if (jwt !== undefined) {
@@ -24,7 +23,6 @@ export function setupPageGuard(router: Router) {
       }
     }
     else if (!authStore.session) {
-      // console.log('no session')
       try {
         const data = await authStore.getSession()
         if (String(data.auth) === 'false' && authStore.token)

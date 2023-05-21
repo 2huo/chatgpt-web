@@ -1,9 +1,9 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
 import { NButton, NInput, NModal, useMessage } from 'naive-ui'
-import { fetchVerify } from '@/api'
 import { useAuthStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
+import { fetchVerify } from '@/api'
 
 interface Props {
   visible: boolean
@@ -44,10 +44,9 @@ async function handleVerify() {
 }
 
 function handlePress(event: KeyboardEvent) {
-  if (event.key === 'Enter' && !event.shiftKey) {
+  if (event.key === 'Enter' && !event.shiftKey)
     event.preventDefault()
-    handleVerify()
-  }
+  handleVerify()
 }
 </script>
 
