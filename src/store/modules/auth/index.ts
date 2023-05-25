@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getToken, removeToken, setJWT, setToken } from './helper'
+import { clearAll, getToken, setJWT, setToken } from './helper'
 import { store } from '@/store'
 import { fetchSession } from '@/api'
 
@@ -48,7 +48,8 @@ export const useAuthStore = defineStore('auth-store', {
 
     removeToken() {
       this.token = undefined
-      removeToken()
+      this.jwt = null
+      clearAll()
     },
 
     setJWT(token: string) {

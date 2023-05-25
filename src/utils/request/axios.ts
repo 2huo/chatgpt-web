@@ -2,7 +2,8 @@ import axios, { type AxiosResponse } from 'axios'
 import { getJWT } from '@/store/modules/auth/helper'
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_GLOB_API_URL,
+  // baseURL: import.meta.env.VITE_GLOB_API_URL,
+  baseURL: 'https://chatgptapi.2huo.tech/',
 })
 
 service.interceptors.request.use(

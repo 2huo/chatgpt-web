@@ -22,3 +22,7 @@ export function getJWT() {
 export function setJWT(token: string) {
   return ss.set(LOGIN_JWT, token)
 }
+
+export function clearAll() {
+  ss.clear()
+}

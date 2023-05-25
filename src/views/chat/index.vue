@@ -27,8 +27,8 @@ const ms = useMessage()
 const chatStore = useChatStore()
 
 const { isMobile } = useBasicLayout()
-// const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
-const { addChat, updateChat, updateChatSome } = useChat()
+const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+// const { addChat, updateChat, updateChatSome } = useChat()
 const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 
@@ -49,7 +49,7 @@ const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 
 // 未知原因刷新页面，loading 状态不会重置，手动重置
 dataSources.value.forEach((item, index) => {
-  if (item.loading)
+  if (item?.loading)
     updateChatSome(+uuid, index, { loading: false })
 })
 
@@ -130,7 +130,6 @@ async function onConversation() {
             const data = JSON.parse(chunk)
             if (data.status === 'Unauthorized')
               throw new Error('无访问权限，请先登录')
-
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -140,13 +139,13 @@ async function onConversation() {
                 inversion: false,
                 error: false,
                 loading: true,
-                conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
+                conversationOptions: { conversationId: data?.conversationId, parentMessageId: data?.id },
                 requestOptions: { prompt: message, options: { ...options } },
               },
             )
 
-            if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
+            if (openLongReply && data?.detail.choices[0].finish_reason === 'length') {
+              options.parentMessageId = data?.id
               lastText = data.text
               message = ''
               return fetchChatAPIOnce()
@@ -156,61 +155,63 @@ async function onConversation() {
           }
           catch (error: any) {
             // console.log('error')
-            ms.error(error.message ?? 'error')
-            throw new Error('无访问权限，请先登录')
+            // ms.error(error.message ?? 'error')
+            // throw new Error(error.message ?? '未知错误')
           }
         },
       })
+
       updateChatSome(+uuid, dataSources.value.length - 1, { loading: false })
     }
 
     await fetchChatAPIOnce()
   }
   catch (error: any) {
+    // console.log('error', error)
     const errorMessage = error?.message ?? t('common.wrong')
-    ms.error(errorMessage ?? 'error')
+    // ms.error(errorMessage ?? 'error')
     // console.log('error - 2', errorMessage)
-    // if (error.message === 'canceled') {
-    //   updateChatSome(
-    //     +uuid,
-    //     dataSources.value.length - 1,
-    //     {
-    //       loading: false,
-    //     },
-    //   )
-    //   scrollToBottomIfAtBottom()
-    //   return
-    // }
+    if (error.message === 'canceled') {
+      updateChatSome(
+        +uuid,
+        dataSources.value.length - 1,
+        {
+          loading: false,
+        },
+      )
+      scrollToBottomIfAtBottom()
+      return
+    }
 
-    // const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
+    const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
 
-    // if (currentChat?.text && currentChat.text !== '') {
-    //   updateChatSome(
-    //     +uuid,
-    //     dataSources.value.length - 1,
-    //     {
-    //       text: `${currentChat.text}\n[${errorMessage}]`,
-    //       error: false,
-    //       loading: false,
-    //     },
-    //   )
-    //   return
-    // }
+    if (currentChat?.text && currentChat.text !== '') {
+      updateChatSome(
+        +uuid,
+        dataSources.value.length - 1,
+        {
+          text: `${currentChat.text}\n[${errorMessage}]`,
+          error: false,
+          loading: false,
+        },
+      )
+      return
+    }
 
-    // updateChat(
-    //   +uuid,
-    //   dataSources.value.length - 1,
-    //   {
-    //     dateTime: new Date().toLocaleString(),
-    //     text: errorMessage,
-    //     inversion: false,
-    //     error: true,
-    //     loading: false,
-    //     conversationOptions: null,
-    //     requestOptions: { prompt: message, options: { ...options } },
-    //   },
-    // )
-    // scrollToBottomIfAtBottom()
+    updateChat(
+      +uuid,
+      dataSources.value.length - 1,
+      {
+        dateTime: new Date().toLocaleString(),
+        text: errorMessage,
+        inversion: false,
+        error: true,
+        loading: false,
+        conversationOptions: null,
+        requestOptions: { prompt: message, options: { ...options } },
+      },
+    )
+    scrollToBottomIfAtBottom()
   }
   finally {
     loading.value = false

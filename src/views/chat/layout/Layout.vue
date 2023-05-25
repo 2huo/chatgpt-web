@@ -1,11 +1,12 @@
 <script setup lang='ts'>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { NLayout, NLayoutContent } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import Sider from './sider/index.vue'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 // import { useAppStore, useAuthStore, useChatStore } from '@/store'
 import { useAppStore, useChatStore } from '@/store'
+import { initLocalState } from '@/store/modules/chat/helper'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -31,6 +32,12 @@ const getContainerClass = computed(() => {
     'h-full',
     { 'pl-[260px]': !isMobile.value && !collapsed.value },
   ]
+})
+
+onMounted(() => {
+  initLocalState().then(() => {
+    console.log('initLocalState - ok')
+  })
 })
 </script>
 
