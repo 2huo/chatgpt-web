@@ -74,12 +74,16 @@ async function registerHandle() {
     message.error('两次密码输入不相同')
   }
 }
+
+function findPWDHandle() {
+  message.warning('暂未开放')
+}
 </script>
 
 <template>
-  <div class="flex justify-center items-center flex-col card-filp" :class="isLogin ? 'no-flip' : 'filp'">
+  <div class="flex justify-center h-1/2 w-full sm:w-2/5 sm:h-1/4 items-center flex-col card-filp" :class="isLogin ? 'no-flip' : 'filp'">
     <div class="front">
-      <NCard title="登录">
+      <NCard title="登录" embedded>
         <NForm label-placement="top">
           <NFormItem label="账号">
             <NInput v-model:value="account" placeholder="请输入账号/邮箱/电话" />
@@ -98,7 +102,7 @@ async function registerHandle() {
             </NButton>
           </div>
           <div class="ml-10">
-            <NButton quaternary type="error">
+            <NButton quaternary type="error" @click="findPWDHandle">
               忘记密码
             </NButton>
           </div>
@@ -106,7 +110,7 @@ async function registerHandle() {
       </NCard>
     </div>
     <div class="back">
-      <NCard title="注册账号">
+      <NCard title="注册账号" embedded>
         <NForm label-placement="top">
           <NFormItem label="账号">
             <NInput v-model:value="r_account" placeholder="请输入账号" />
@@ -135,8 +139,8 @@ async function registerHandle() {
 
 <style scoped>
 .card-filp {
-  height: 300px;
-  width: 500px;
+  /* height: 300px; */
+  /* width: 500px; */
   position: relative;
   left: 50%;
   top: 50%;

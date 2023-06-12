@@ -1,5 +1,6 @@
 import { fetch_getChatStorage, fetch_updateChatStorage } from '@/api'
 import { ss } from '@/utils/storage'
+import { debounce } from '@/utils/functions/debounce'
 
 const LOCAL_NAME = 'chatStorage'
 
@@ -18,11 +19,19 @@ export function getLocalState(): Chat.ChatState {
   return { ...defaultState(), ...localState }
 }
 
-export function setLocalState(state: Chat.ChatState) {
+export const setLocalState = debounce((state: Chat.ChatState) => {
+  console.log('fetch_updateChatStorage')
   fetch_updateChatStorage(JSON.stringify(state)).then(() => {
     ss.set(LOCAL_NAME, state)
   })
-}
+}, 1000)
+
+// export function setLocalState(state: Chat.ChatState) {
+//   console.log('fetch_updateChatStorage')
+//   fetch_updateChatStorage(JSON.stringify(state)).then(() => {
+//     ss.set(LOCAL_NAME, state)
+//   })
+// }
 
 export async function initLocalState() {
   const data = await fetch_getChatStorage<any>()

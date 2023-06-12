@@ -128,6 +128,7 @@ const themeOptions: { label: string; key: Theme; icon: string }[] = [
 async function handleLogout() {
   ss.clear()
   await router.push({ name: 'login' })
+  location.reload()
 }
 </script>
 
