@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  NButton, NCard, NForm, NFormItem, NInput, useMessage,
+  NButton, NCard, NForm, NFormItem, NInput, NTabPane, NTabs, useMessage,
 } from 'naive-ui'
 import { ref } from 'vue'
 import { Md5 } from 'ts-md5'
@@ -83,30 +83,43 @@ function findPWDHandle() {
 <template>
   <div class="flex justify-center h-1/2 w-full sm:w-2/5 sm:h-1/4 items-center flex-col card-filp" :class="isLogin ? 'no-flip' : 'filp'">
     <div class="front">
-      <NCard title="登录" embedded>
-        <NForm label-placement="top">
-          <NFormItem label="账号">
-            <NInput v-model:value="account" placeholder="请输入账号/邮箱/电话" />
-          </NFormItem>
-          <NFormItem label="密码">
-            <NInput v-model:value="password" placeholder="请输入密码" type="password" />
-          </NFormItem>
-        </NForm>
-        <div class="flex justify-center">
-          <NButton type="primary" @click="loginHandle">
-            登录账号
-          </NButton>
-          <div class="ml-4">
-            <NButton tertiary type="info" @click="rotate2register">
-              我要注册
-            </NButton>
-          </div>
-          <div class="ml-10">
-            <NButton quaternary type="error" @click="findPWDHandle">
-              忘记密码
-            </NButton>
-          </div>
-        </div>
+      <NCard embedded>
+        <NTabs default-value="signin" size="large" justify-content="space-evenly">
+          <NTabPane name="signin" tab="账号登录">
+            <NForm label-placement="top">
+              <NFormItem label="账号">
+                <NInput v-model:value="account" placeholder="请输入账号/邮箱/电话" />
+              </NFormItem>
+              <NFormItem label="密码">
+                <NInput v-model:value="password" placeholder="请输入密码" type="password" />
+              </NFormItem>
+            </NForm>
+            <div class="flex justify-center">
+              <NButton type="primary" @click="loginHandle">
+                登录账号
+              </NButton>
+              <div class="ml-4">
+                <NButton tertiary type="info" @click="rotate2register">
+                  我要注册
+                </NButton>
+              </div>
+              <div class="ml-10">
+                <NButton quaternary type="error" @click="findPWDHandle">
+                  忘记密码
+                </NButton>
+              </div>
+            </div>
+          </NTabPane>
+          <!-- <NTabPane name="wx-login" tab="微信登录">
+            <div class="flex justify-center">
+              <div class="ml-4">
+                <NButton tertiary type="info" @click="rotate2register">
+                  我要注册
+                </NButton>
+              </div>
+            </div>
+          </NTabPane> -->
+        </NTabs>
       </NCard>
     </div>
     <div class="back">
