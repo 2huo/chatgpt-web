@@ -1,8 +1,0 @@
-{
-  "root": true,
-  "ignorePatterns": ["build"],
-  "extends": ["@antfu"],
-  "rules": {
-    "no-console": "off"
-  }
-}
